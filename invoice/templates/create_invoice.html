@@ -1,0 +1,96 @@
+<!-- create_invoice.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
+>
+    <title>Create Invoice</title>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Create Invoice</h1>
+
+            <!-- Invoice Form -->
+            <form method="post">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label">Customer Name</label>
+                    <div class="control">
+                        <input class="input" type="text" name="customer_name" value="{{ invoice_form.customer_name.value }}">
+                    </div>
+                    
+                </div>
+
+                <div class="field">
+                    <label class="label">Delivery Cost</label>
+                    <div class="control">
+                        {{ invoice_form.delivery_cost }}
+                    </div>
+                </div>
+
+                <!-- Invoice Items Formset -->
+                <h2 class="subtitle">Invoice Items</h2>
+                {{ formset.management_form }}
+
+                <table class="table is-fullwidth is-striped">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-items">
+                        {% for form in formset %}
+                        <tr>
+                            <td>{{ form.product }}</td>
+                            <td>{{ form.quantity }}</td>
+                            <td>
+                                <button type="button" class="button is-danger is-small delete-item">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <button type="button" class="button is-info" id="add-item">Add Item</button>
+                <button type="submit" class="button is-primary">Save Invoice</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        $(document).ready(function () {
+            let formsetTotalForms = $('#id_form-TOTAL_FORMS'); // Get the total number of forms
+            let currentFormCount = parseInt(formsetTotalForms.val()); // Convert to an integer
+
+            $('#add-item').click(function () {
+                let newFormIndex = currentFormCount; // Index for the new form
+                let newFormHtml = $('#invoice-items-table tbody tr:last').clone(); // Clone the last row
+
+                newFormHtml.find('input').each(function () {
+                    let nameAttr = $(this).attr('name').replace(/\d+/, newFormIndex); // Update index
+                    let idAttr = $(this).attr('id').replace(/\d+/, newFormIndex); // Update ID
+
+                    $(this).attr({ name: nameAttr, id: idAttr }).val(''); // Clear the value
+                });
+
+                $('#invoice-items-table tbody').append(newFormHtml); // Add the new form to the table
+                formsetTotalForms.val(++currentFormCount); // Increment the total form count
+            });
+
+            $(document).on('click', '.delete-item', function () {
+                $(this).closest('tr').remove(); // Remove the row
+                formsetTotalForms.val(--currentFormCount); // Decrement the total form count
+            });
+        });
+    </script>
+    
+</body>
+</html>

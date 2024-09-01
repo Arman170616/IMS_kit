@@ -1,0 +1,73 @@
+
+<!-- templates/create_invoice.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Invoice</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Create Invoice</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ invoice_form.as_p }}
+
+        <h2>Invoice Items</h2>
+        {{ formset.management_form }}
+        <table id="invoice-items-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    <tr class="invoice-item">
+                        <td>{{ form.product }}</td>
+                        <td>{{ form.quantity }}</td>
+                        <td>
+                            <button type="button" class="delete-item">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <button type="button" id="add-item">Add Item</button>
+        <button type="submit">Save Invoice</button>
+    </form>
+
+    <script>
+        // JavaScript to dynamically add new invoice items
+        $(document).ready(function () {
+            let formsetTotalForms = $('#id_form-TOTAL_FORMS'); // Get the total number of forms
+            let currentFormCount = parseInt(formsetTotalForms.val()); // Convert to an integer
+
+            $('#add-item').click(function () {
+                let newFormIndex = currentFormCount; // Index for the new form
+                let newFormHtml = $('#invoice-items-table tbody tr:last').clone(); // Clone the last row
+
+                newFormHtml.find('input').each(function () {
+                    let nameAttr = $(this).attr('name').replace(/\d+/, newFormIndex); // Update index
+                    let idAttr = $(this).attr('id').replace(/\d+/, newFormIndex); // Update ID
+
+                    $(this).attr({ name: nameAttr, id: idAttr }).val(''); // Clear the value
+                });
+
+                $('#invoice-items-table tbody').append(newFormHtml); // Add the new form to the table
+                formsetTotalForms.val(++currentFormCount); // Increment the total form count
+            });
+
+            // Delete item functionality
+            $(document).on('click', '.delete-item', function () {
+                $(this).closest('tr').remove(); // Remove the row
+                formsetTotalForms.val(--currentFormCount); // Decrement the total form count
+            });
+        });
+    </script>
+</body>
+</html>

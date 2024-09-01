@@ -1,0 +1,88 @@
+<!-- templates/invoice_detail.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice #{{ invoice.id }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
+>
+</head>
+<body>
+    {% comment %} <h1>Invoice #{{ invoice.id }}</h1>
+    <p><strong>Customer Name:</strong> {{ invoice.customer_name }}</p>
+    <p><strong>Created At:</strong> {{ invoice.created_at }}</p>
+
+    <h2>Items</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.price }}</td>
+                    <td>{{ item.line_total }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3">Delivery Cost</td>
+                <td>{{ invoice.delivery_cost }}</td>
+            </tr>
+            <tr>
+                <td colspan="3"><strong>Total Cost</strong></td>
+                <td>{{ invoice.total_cost }}</td>
+            </tr>
+        </tbody>
+    </table>{% endcomment %}
+
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Invoice Details</h1>
+
+            <div class="box">
+                <h2 class="subtitle">Customer: {{ invoice.customer_name }}</h2>
+                <p><strong>Created At:</strong> {{ invoice.created_at }}</p>
+                <p><strong>Delivery Cost:</strong> ${{ invoice.delivery_cost }}</p>
+                <p><strong>Total Cost:</strong> ${{ invoice.total_cost }}</p>
+            </div>
+
+            <h2 class="subtitle">Items</h2>
+            <table class="table is-fullwidth is-striped">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Line Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in invoice.items.all %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.line_total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <a href="{% url 'invoice_list' %}" class="button is-link">Back to Invoice List</a>
+        </div>
+    </section>
+
+
+</body> 
+</html>
