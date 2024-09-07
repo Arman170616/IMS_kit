@@ -6,23 +6,25 @@ from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 from django.forms import formset_factory
 from .models import Invoice, InvoiceItem, Product
-from .forms import InvoiceForm, ProductForm
+from .forms import ProductForm
+
 
 
 def create_invoice(request):
     if request.method == 'POST':
         invoice_form = InvoiceForm(request.POST)
-        # print(invoice_form, '==888888====')
+        print(request.POST, '==888888====')
         formset = InvoiceItemFormSet(request.POST)
-        print(formset, '==999999====')
+        # print(formset, '==999999====')
         if invoice_form.is_valid() and formset.is_valid():
             invoice = invoice_form.save()
             items = formset.save(commit=False)
+            # print(items, '==777777====')
             for item in items:
                 item.invoice = invoice
                 item.line_total = item.product.price * item.quantity
                 item.save()
-                print(items, '======')
+                # print(items, '======')
             # Update total cost
             invoice.total_cost = sum(item.line_total for item in invoice.items.all()) + invoice.delivery_cost
             invoice.save()
@@ -36,56 +38,34 @@ def create_invoice(request):
 
 
 
+# from django.shortcuts import render, redirect
+# from .models import Invoice, InvoiceItem
+# from .forms import ItemInvoiceFormSet
 
 # def create_invoice(request):
-#     InvoiceItemFormSet = formset_factory(InvoiceItemForm, extra=1)  # Create a formset from InvoiceItemForm
-
 #     if request.method == 'POST':
-#         invoice_form = InvoiceForm(request.POST)
-#         formset = InvoiceItemFormSet(request.POST)
+#         # Create a new Invoice
+#         invoice = Invoice.objects.create(
+#             customer_name=request.POST['customer_name'],
+#             delivery_cost=request.POST['delivery_cost']
+#         )
+       
+#         formset = ItemInvoiceFormSet(request.POST, queryset=InvoiceItem.objects.none())
 
-#         if invoice_form.is_valid() and formset.is_valid():
-#             # Create the invoice
-#             invoice = invoice_form.save(commit=False)
-            
-#             # Initialize total cost
-#             total_cost = 0
-
-#             # Save the formset data
-#             invoice.save()  # Save invoice first to get the invoice ID
-
+#         if formset.is_valid():
 #             for form in formset:
-#                 if form.cleaned_data:  # Check that form has data
-#                     item = form.save(commit=False)
-#                     item.invoice = invoice  # Link item to the created invoice
-#                     item.save()
-
-#                     # Calculate total cost for the invoice
-#                     total_cost += item.product.price * item.quantity
-            
-#             # Add the delivery cost to total cost
-#             invoice.total_cost = total_cost + invoice.delivery_cost
-#             invoice.save()  # Save the updated total cost
-
+#                 # Save each ItemInvoice, linking it to the created invoice
+#                 item_invoice = form.save(commit=False)
+#                 item_invoice.invoice = invoice
+#                 item_invoice.save()
+           
 #             return redirect('invoice_list')
-#         else:
-#             # Print form errors for debugging
-#             print("Invoice Form Errors:", invoice_form.errors)
-#             print("Formset Errors:", formset.errors)
 #     else:
-#         invoice_form = InvoiceForm()
-#         formset = InvoiceItemFormSet()
-
-#     return render(request, 'create_invoice.html', {'invoice_form': invoice_form, 'formset': formset})
-
+#         formset = ItemInvoiceFormSet(queryset=InvoiceItem.objects.none())
+   
+#     return render(request, 'create_invoice.html', {'formset': formset})
 
 
-# def invoice_list(request):
-#     invoices = Invoice.objects.all()
-#     return render(request, 'invoice_list.html', {'invoices': invoices})
-
-
-# views.py
 
 from django.shortcuts import render
 from .models import Invoice

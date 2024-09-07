@@ -16,6 +16,19 @@ InvoiceItemFormSet = forms.inlineformset_factory(
 
 
 
+# from django import forms
+# from .models import InvoiceItem
+
+# class InvoiceItemForm(forms.ModelForm):
+#     class Meta:
+#         model = InvoiceItem
+#         fields = ['product', 'quantity']
+
+# from django.forms import modelformset_factory
+
+# ItemInvoiceFormSet = modelformset_factory(InvoiceItem, form=InvoiceItemForm, extra=1)
+
+
 # from django.forms import ModelForm
 # from .models import Task,Project
 
