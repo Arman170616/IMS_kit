@@ -12,17 +12,7 @@ class Invoice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     delivery_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    
-    # def save(self, *args, **kwargs):
-    #     # Calculate total cost from related invoice items
-    #     total_cost = sum(item.product.price * item.quantity for item in self.items.all())
-    #     # Add delivery cost
-    #     total_cost += self.delivery_cost
-    #     self.total_cost = total_cost
-    #     super().save(*args, **kwargs)
 
-    # def __str__(self):
-    #     return f'Invoice #{self.id}' - {self.customer_name}
 
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')

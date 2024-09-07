@@ -13,40 +13,6 @@
 >
 </head>
 <body>
-    {% comment %} <h1>Invoice #{{ invoice.id }}</h1>
-    <p><strong>Customer Name:</strong> {{ invoice.customer_name }}</p>
-    <p><strong>Created At:</strong> {{ invoice.created_at }}</p>
-
-    <h2>Items</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in invoice.items.all %}
-                <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.product.price }}</td>
-                    <td>{{ item.line_total }}</td>
-                </tr>
-            {% endfor %}
-            <tr>
-                <td colspan="3">Delivery Cost</td>
-                <td>{{ invoice.delivery_cost }}</td>
-            </tr>
-            <tr>
-                <td colspan="3"><strong>Total Cost</strong></td>
-                <td>{{ invoice.total_cost }}</td>
-            </tr>
-        </tbody>
-    </table>{% endcomment %}
-
 
     <section class="section">
         <div class="container">
@@ -65,7 +31,7 @@
                     <tr>
                         <th>Product</th>
                         <th>Quantity</th>
-                        <th>Line Total</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>

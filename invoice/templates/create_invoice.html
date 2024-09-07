@@ -1,44 +1,29 @@
-<!-- create_invoice.html -->
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <title>Create Invoice</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
->
-    <title>Create Invoice</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <section class="section">
         <div class="container">
             <h1 class="title">Create Invoice</h1>
-
-            <!-- Invoice Form -->
             <form method="post">
                 {% csrf_token %}
                 <div class="field">
-                    <label class="label">Customer Name</label>
                     <div class="control">
-                        <input class="input" type="text" name="customer_name" value="{{ invoice_form.customer_name.value }}">
-                    </div>
-                    
-                </div>
-
-                <div class="field">
-                    <label class="label">Delivery Cost</label>
-                    <div class="control">
-                        {{ invoice_form.delivery_cost }}
+                        {{ invoice_form.as_p }}
                     </div>
                 </div>
 
-                <!-- Invoice Items Formset -->
                 <h2 class="subtitle">Invoice Items</h2>
                 {{ formset.management_form }}
-
-                <table class="table is-fullwidth is-striped">
+                <table class="table is-fullwidth is-striped" id="invoice-table">
                     <thead>
                         <tr>
                             <th>Product</th>
@@ -48,17 +33,17 @@
                     </thead>
                     <tbody id="invoice-items">
                         {% for form in formset %}
-                        <tr>
-                            <td>{{ form.product }}</td>
-                            <td>{{ form.quantity }}</td>
-                            <td>
-                                <button type="button" class="button is-danger is-small delete-item">Delete</button>
-                            </td>
-                        </tr>
+                            <tr class="invoice-item">
+                                <td>{{ form.product }}</td>
+                                <td>{{ form.quantity }}</td>
+                                <td>
+                                    <button type="button" class="button is-danger is-small delete-item">Delete</button>
+                                </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-
+                
                 <button type="button" class="button is-info" id="add-item">Add Item</button>
                 <button type="submit" class="button is-primary">Save Invoice</button>
             </form>
@@ -66,31 +51,41 @@
     </section>
 
     <script>
-        $(document).ready(function () {
-            let formsetTotalForms = $('#id_form-TOTAL_FORMS'); // Get the total number of forms
-            let currentFormCount = parseInt(formsetTotalForms.val()); // Convert to an integer
+        document.getElementById('add-item').addEventListener('click', function() {
+            // Get the total forms count
+            let formIdx = document.querySelectorAll('.invoice-item').length;
 
-            $('#add-item').click(function () {
-                let newFormIndex = currentFormCount; // Index for the new form
-                let newFormHtml = $('#invoice-items-table tbody tr:last').clone(); // Clone the last row
+            // Clone the last row and update form index
+            let newRow = document.querySelector('#invoice-items tr:last-child').cloneNode(true);
+            
+            // Clear input values in the cloned row
+            newRow.querySelector('select').name = `form-${formIdx}-product`;
+            newRow.querySelector('input').name = `form-${formIdx}-quantity`;
+            newRow.querySelector('select').value = '';
+            newRow.querySelector('input').value = '';
 
-                newFormHtml.find('input').each(function () {
-                    let nameAttr = $(this).attr('name').replace(/\d+/, newFormIndex); // Update index
-                    let idAttr = $(this).attr('id').replace(/\d+/, newFormIndex); // Update ID
+            document.getElementById('invoice-items').appendChild(newRow);
 
-                    $(this).attr({ name: nameAttr, id: idAttr }).val(''); // Clear the value
-                });
-
-                $('#invoice-items-table tbody').append(newFormHtml); // Add the new form to the table
-                formsetTotalForms.val(++currentFormCount); // Increment the total form count
-            });
-
-            $(document).on('click', '.delete-item', function () {
-                $(this).closest('tr').remove(); // Remove the row
-                formsetTotalForms.val(--currentFormCount); // Decrement the total form count
-            });
+            // Update the TOTAL_FORMS value in the management form
+            document.getElementById('id_form-TOTAL_FORMS').value = formIdx + 1;
         });
+
+        // Event delegation for deleting rows
+        document.getElementById('invoice-items').addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-item')) {
+                e.target.closest('tr').remove();
+                updateFormIndices();
+            }
+        });
+
+        function updateFormIndices() {
+            let rows = document.querySelectorAll('.invoice-item');
+            document.getElementById('id_form-TOTAL_FORMS').value = rows.length;
+            rows.forEach((row, index) => {
+                row.querySelector('select').name = `form-${index}-product`;
+                row.querySelector('input').name = `form-${index}-quantity`;
+            });
+        }
     </script>
-    
 </body>
 </html>

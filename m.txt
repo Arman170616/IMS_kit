@@ -1,0 +1,15 @@
+class InvoiceForm(ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ['customer_name', 'delivery_cost']
+
+
+class ProductForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'price', 'description']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'Product Name'}),
+            'price': forms.NumberInput(attrs={'class': 'input', 'placeholder': 'Product Price'}),
+            'description': forms.Textarea(attrs={'class': 'textarea', 'placeholder': 'Product Description'}),
+        }
