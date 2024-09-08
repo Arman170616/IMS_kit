@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-9z_q0z_k)tfa(6px7201mc^0tng72t9d=$+(if%g_5$ezel6(b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['tonni-kitchen.vercel.app', 'localhost', '127.0.0.1:8000']
 
 
 # Application definition
